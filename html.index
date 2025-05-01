@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paystack Payment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .payment-form {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #0ab579;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background: #089e6e;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-form">
+        <h2>Make a Payment</h2>
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <button type="submit" onclick="payWithPaystack()">Pay $100</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Include Paystack's inline script -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    
+    <script>
+        function payWithPaystack() {
+            event.preventDefault();
+            
+            const email = document.getElementById("email").value;
+            
+            const handler = PaystackPop.setup({
+                key: 'pk_live_742d973a21ac0e002db0d9632e99b90aac454274', // Your live public key
+                email: email,
+                amount: 10000, // 10000 cents = $100
+                currency: 'USD', // US Dollars
+                ref: 'PAY_' + Math.floor((Math.random() * 1000000000) + 1), // Better reference format
+                callback: function(response) {
+                    // Redirect to success page with reference
+                    window.location.href = `/payment-success?reference=${response.reference}`;
+                },
+                onClose: function() {
+                    alert('Payment window closed. You can try again.');
+                }
+            });
+            
+            handler.openIframe();
+        }
+    </script>
+</body>
+</html>
