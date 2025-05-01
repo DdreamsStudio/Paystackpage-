@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Landing Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #0f172a;
+        }
+        
+        p.subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .payment-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #334155;
+        }
+        
+        input[type="email"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        
+        .pay-button {
+            background-color: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+        
+        .pay-button:hover {
+            background-color: #4f46e5;
+        }
+        
+        .pay-button:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+        
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Welcome to Our Service</h1>
+            <p class="subtitle">Get started by entering your email and making a payment to access premium features.</p>
+        </header>
+        
+        <div class="payment-section">
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                    <div class="error-message" id="emailError">Please enter a valid email address</div>
+                </div>
+                
+                <button type="button" class="pay-button" id="payButton" onclick="payWithPaystack()">Pay Now</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function payWithPaystack() {
+            const email = document.getElementById('email').value;
+            const emailError = document.getElementById('emailError');
+            
+            // Simple email validation
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                emailError.style.display = 'block';
+                return;
+            } else {
+                emailError.style.display = 'none';
+            }
+            
+            // Initialize Paystack payment
+            const handler = PaystackPop.setup({
+                key: 'pk_live_742d973a21ac0e002db0d9632e99b90aac454274', // Your Paystack public key
+                email: email,
+                amount: 500000, // amount in kobo (500000 = ₦5,000)
+                currency: 'NGN', // or 'USD', 'GHS', etc.
+                ref: 'PS_' + Math.floor(Math.random() * 1000000000 + 1), // generates a pseudo-unique reference
+                callback: function(response) {
+                    // Payment complete - you can redirect or show a success message
+                    alert('Payment complete! Reference: ' + response.reference);
+                    // Here you can redirect to a success page or update your database
+                    // window.location.href = '/payment-success?reference=' + response.reference;
+                },
+                onClose: function() {
+                    // User closed the payment modal
+                    alert('Payment window closed.');
+                }
+            });
+            
+            handler.openIframe();
+        }
+    </script>
+</body>
+</html>
